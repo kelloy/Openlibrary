@@ -42,8 +42,6 @@ public class bookController {
             model.addAttribute("bookresult", bookresult);
         }else{
         bookresult = bookSvc.getBook(path);
-        System.out.println(bookresult);
-        System.out.println(bookresult.getTitle());
         String value = bookSvc.convertToString(bookresult);
         bookRepo.saveRepo(path, value);
         
