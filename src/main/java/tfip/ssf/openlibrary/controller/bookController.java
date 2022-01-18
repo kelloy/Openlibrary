@@ -16,11 +16,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import tfip.ssf.openlibrary.Repo.bookRepository;
 import tfip.ssf.openlibrary.model.book;
-import tfip.ssf.openlibrary.model.cached;
 import tfip.ssf.openlibrary.service.bookService;
 
 @Controller
-@RequestMapping(path = "/book",produces = MediaType.TEXT_HTML_VALUE)
+@RequestMapping(path = "/book",produces = MediaType.APPLICATION_JSON_VALUE)
 
 public class bookController {
 
@@ -36,28 +35,25 @@ public class bookController {
     @GetMapping("/{path}")
     public String displayBook(Model model, @PathVariable(value="path") String path){
         book bookresult = new book();
-        cached cached = new cached();
 
         if(bookRepo.getData(path).isPresent()){
             bookresult = bookSvc.getBookData(path);
             System.out.println(bookresult.getDescription());
             model.addAttribute("bookresult", bookresult);
-        }else{
+        }
+        
         bookresult = bookSvc.getBook(path);
+        System.out.println(bookresult.getTitle());
         String value = bookSvc.convertToString(bookresult);
-
         bookRepo.saveRepo(path, value);
+
         if (bookRepo.saveRepo(path,value) == true){
-            cached.setStatus("Yes");
-            System.out.println(cached.getStatus());
-            ;
+            bookresult.setCached("Yes");
         }else{
-            cached.setStatus("No");;
+            bookresult.setCached("No");
         }
 
         model.addAttribute("bookresult", bookresult);
-        model.addAttribute("cached",cached);
-        }
         
         return "results";
         }

@@ -8,6 +8,15 @@ public class book {
     private String path;
     private String description;
     private String excerpt;
+    private String cached;
+
+    public String getCached() {
+        return this.cached;
+    }
+
+    public void setCached(String cached) {
+        this.cached = cached;
+    }
 
     public String getDescription() {
         return this.description;

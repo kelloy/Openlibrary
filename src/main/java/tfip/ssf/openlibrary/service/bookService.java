@@ -73,24 +73,24 @@ public class bookService {
        try(InputStream is = new ByteArrayInputStream(resp.getBody().getBytes())){
             JsonReader reader = Json.createReader(is);
             JsonObject result = reader.readObject();
-            if (result.isNull("description")){
-                bookresult.setDescription("no description");     
-             }else{
-                bookresult.setDescription("no description");
+            if(result.getJsonString("description") == null){
+                bookresult.setDescription("No description");
+            } else{
+            bookresult.setDescription(result.getString("description"));
             }
             String title = result.getString("title");
+            if(result.getJsonArray("excerpts")==null){
+                bookresult.setExcerpt("No excerpt");
+            }else{
             JsonArray readings = result.getJsonArray("excerpts");
             for(jakarta.json.JsonValue s: readings){
                 JsonObject o = s.asJsonObject();
-                if (!o.isNull("excerpt")){
-                    bookresult.setExcerpt(o.getString("excerpt"));
-                }else{
-                bookresult.setExcerpt("No Excerpt");
-            }   
-        }
-            bookresult.setTitle(title);
-        }catch (IOException e){
-
+                bookresult.setExcerpt(o.getString("excerpt"));
+                }
+                bookresult.setTitle(title);
+            }
+            }
+        catch (IOException e){
 
         }
     
@@ -98,12 +98,32 @@ public class bookService {
         
     }
 
-
     public String convertToString(book book){
+        String bookexcerpt;
+        String bookdescription;
+
+        if(book.getExcerpt() == null){
+            bookexcerpt = "no excerpt";
+        }else{
+            bookexcerpt = book.getExcerpt();
+        }
+
+        if(book.getDescription() == null){
+            bookdescription = "no description";
+        }else{
+            bookdescription = book.getDescription();
+        }
+
+        if(book.getTitle() == null){
+            bookdescription = "title";
+        }else{
+            bookdescription = book.getTitle();
+        }
+
         JsonObject o = Json.createObjectBuilder().
         add("title",book.getTitle()).
-        add("excerpts",book.getExcerpt()).
-        add("description",book.getDescription()).build();
+        add("excerpts",bookexcerpt).
+        add("description",bookdescription).build();
         String value = o.toString();
         return value;
     }
