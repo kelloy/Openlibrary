@@ -24,19 +24,19 @@ public class redisConfig {
     @Value("${spring.redis.port}")
     private Integer redisPort;
 
-     private final String redisPassword;
+      private final String redisPassword;
  
     public redisConfig() {
         redisPassword = System.getenv(Constants.REDIS_PASSWORD);
     }
- 
+  
     @Bean("BEAN_LIBRARY_CACHE")
     public RedisTemplate<String, String> redisTemplateFactory() {
 
         final RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
         redisConfig.setHostName(redisHost);
           redisConfig.setPort(redisPort);
-         if (null != redisPassword) {
+          if (null != redisPassword) {
             redisConfig.setPassword(redisPassword);
             logger.info("Set Redis password");
          }

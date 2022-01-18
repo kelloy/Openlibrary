@@ -40,9 +40,9 @@ public class bookController {
             bookresult = bookSvc.getBookData(path);
             System.out.println(bookresult.getDescription());
             model.addAttribute("bookresult", bookresult);
-        }
-        
+        }else{
         bookresult = bookSvc.getBook(path);
+        System.out.println(bookresult);
         System.out.println(bookresult.getTitle());
         String value = bookSvc.convertToString(bookresult);
         bookRepo.saveRepo(path, value);
@@ -52,6 +52,7 @@ public class bookController {
         }else{
             bookresult.setCached("No");
         }
+    }
 
         model.addAttribute("bookresult", bookresult);
         
