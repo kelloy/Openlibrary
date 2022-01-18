@@ -1,5 +1,6 @@
 package tfip.ssf.openlibrary.Repo;
 
+import java.time.Duration;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -20,7 +21,7 @@ public class bookRepository {
         public boolean saveRepo(String title, String value){
             Boolean result = true;
             title = NormaliseString(title);
-            template.opsForValue().set(title,value);
+            template.opsForValue().set(title,value,Duration.ofMinutes(10));
             return result;
         }
 
