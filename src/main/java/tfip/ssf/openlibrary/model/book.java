@@ -6,6 +6,16 @@ public class book {
     private String title;
     private String key;
     private String path;
+    private String description;
+    private String excerpt;
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
     
 
     public book(String title, String key, String path) {
@@ -40,7 +50,14 @@ public class book {
 
     public void setPath(String path) {
         String b = path.replace("works", "book");
-        String bookurl = Constants.URL_BASE+b;
-        this.path = bookurl;
+        this.path = b;
+    }
+
+    public void setExcerpt(String excerpt){
+        this.excerpt = excerpt;
+    }
+
+    public String getExcerpt(){
+        return this.excerpt;
     }
 }

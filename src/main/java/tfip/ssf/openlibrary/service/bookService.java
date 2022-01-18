@@ -33,7 +33,6 @@ public class bookService {
         RestTemplate template = new RestTemplate();
         ResponseEntity<String> resp = template.exchange(req,String.class);
         String Body = resp.getBody();
-        logger.info(Body);
         List<book> booklist = new ArrayList();
 
         try(InputStream is = new ByteArrayInputStream(resp.getBody().getBytes())){
@@ -54,6 +53,47 @@ public class bookService {
         }
         
         return booklist;
+        
+    }
+     public book getBook(String workid){
+        String path = Constants.URL_BOOK+workid+".json";
+        String url = UriComponentsBuilder.fromUriString(path).toUriString();
+        System.out.println(url);
+        RequestEntity req = RequestEntity.get(url).build();
+        RestTemplate template = new RestTemplate();
+        ResponseEntity<String> resp = template.exchange(req,String.class);
+        String Body = resp.getBody();
+        book bookresult = new book();
+
+       try(InputStream is = new ByteArrayInputStream(resp.getBody().getBytes())){
+            JsonReader reader = Json.createReader(is);
+            JsonObject result = reader.readObject();
+            if (result.getString("description") == null){
+                bookresult.setDescription("no description");
+            }else{
+                bookresult.setDescription(result.getString("description"));
+            }
+            String title = result.getString("title");
+            JsonArray readings = result.getJsonArray("excerpts");
+            for(jakarta.json.JsonValue s: readings){
+                JsonObject o = s.asJsonObject();
+                if (o.getString("excerpt")!=null){
+                    bookresult.setExcerpt(o.getString("excerpt"));
+                }else{
+                bookresult.setExcerpt("No Excerpt");
+            }   
+        }
+            bookresult.setTitle(title);
+
+        }catch (IOException e){
+
+
+        }
+ 
+        
+        
+    
+        return bookresult;
         
     }
     
