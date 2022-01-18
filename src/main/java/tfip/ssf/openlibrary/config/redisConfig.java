@@ -35,11 +35,11 @@ public class redisConfig {
 
         final RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration();
         redisConfig.setHostName(redisHost);
-        redisConfig.setPort(redisPort);
-/*         if (null != redisPassword) {
+          redisConfig.setPort(redisPort);
+         if (null != redisPassword) {
             redisConfig.setPassword(redisPassword);
             logger.info("Set Redis password");
-        } */
+         }
  
         final JedisClientConfiguration jedisConfig = JedisClientConfiguration.builder().build();
         final JedisConnectionFactory jedisFac = new JedisConnectionFactory(redisConfig, jedisConfig);
@@ -54,3 +54,4 @@ public class redisConfig {
     }
 
 }
+
