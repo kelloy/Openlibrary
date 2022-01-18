@@ -5,10 +5,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.logging.Logger;
 
 import com.fasterxml.jackson.annotation.JsonValue;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -20,12 +22,15 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonReader;
 import tfip.ssf.openlibrary.Constants;
+import tfip.ssf.openlibrary.Repo.bookRepository;
 import tfip.ssf.openlibrary.model.book;
 
 @Service
 public class bookService {
     
     private final Logger logger = Logger.getLogger(bookService.class.getName());
+
+    @Autowired bookRepository bookRepoSvc;
 
     public List<book> search(String title){
         String url = UriComponentsBuilder.fromUriString(Constants.URL_OPENLIBRARY).queryParam("q", title.trim().replace(" ", "+")).queryParam("limit",Constants.SEARCH_LIMIT).toUriString();
@@ -68,32 +73,57 @@ public class bookService {
        try(InputStream is = new ByteArrayInputStream(resp.getBody().getBytes())){
             JsonReader reader = Json.createReader(is);
             JsonObject result = reader.readObject();
-            if (result.getString("description") == null){
+            if (result.isNull("description")){
+                bookresult.setDescription("no description");     
+             }else{
                 bookresult.setDescription("no description");
-            }else{
-                bookresult.setDescription(result.getString("description"));
             }
             String title = result.getString("title");
             JsonArray readings = result.getJsonArray("excerpts");
             for(jakarta.json.JsonValue s: readings){
                 JsonObject o = s.asJsonObject();
-                if (o.getString("excerpt")!=null){
+                if (!o.isNull("excerpt")){
                     bookresult.setExcerpt(o.getString("excerpt"));
                 }else{
                 bookresult.setExcerpt("No Excerpt");
             }   
         }
             bookresult.setTitle(title);
-
         }catch (IOException e){
 
 
         }
- 
-        
-        
     
         return bookresult;
+        
+    }
+
+
+    public String convertToString(book book){
+        JsonObject o = Json.createObjectBuilder().
+        add("title",book.getTitle()).
+        add("excerpts",book.getExcerpt()).
+        add("description",book.getDescription()).build();
+        String value = o.toString();
+        return value;
+    }
+
+    public book getBookData(String title){
+        Optional<String> opt = bookRepoSvc.getData(title);
+        String JsonString = opt.get();
+        book bookFromRepo = new book();
+        try (InputStream is = new ByteArrayInputStream(JsonString.getBytes())){
+            JsonReader reader = Json.createReader(is);
+            JsonObject o = reader.readObject();
+            bookFromRepo.setTitle(o.getString("title"));
+            bookFromRepo.setDescription(o.getString("description"));
+/*             bookFromRepo.setExcerpt(o.getString("excerpt")); */
+        }catch (IOException e){
+
+        }
+        
+        
+        return bookFromRepo;
         
     }
     
